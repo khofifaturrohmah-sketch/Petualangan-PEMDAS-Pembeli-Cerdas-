@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan PEMDAS (Pembeli Cerdas) Kelas 2</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandPink: '#FF5E8E',
+                        brandYellow: '#FFC837',
+                        brandBlue: '#3A86EF',
+                        brandGreen: '#2EC4B6',
+                        brandPurple: '#8338EC',
+                        storeBg: '#FFF9EB',
+                        shelfWood: '#D4A373'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #3A86EF;
+            background-image: radial-gradient(#2EC4B6 1.5px, transparent 1.5px), radial-gradient(#FFC837 1.5px, #3A86EF 1.5px);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, .font-heading {
+            font-family: 'Fredoka', cursive;
+        }
+
+        .drop-zone-active {
+            border-color: #3A86EF !important;
+            background-color: #EBF3FE !important;
+            transform: scale(1.02);
+        }
+
+        .draggable-item {
+            touch-action: manipulation;
+            transition: all 0.2s ease-in-out;
+            cursor: grab;
+        }
+
+        .draggable-item:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        /* Bounce keyframe animation */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: floatSlow 3s ease-in-out infinite;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            80% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Stamp Effect */
+        .stamp-animation {
+            animation: stampPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes stampPop {
+            0% { opacity: 0; transform: scale(2) rotate(-15deg); }
+            100% { opacity: 1; transform: scale(1) rotate(-5deg); }
+        }
+
+        /* Custom scrollbar for items shelf */
+        .shelf-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+        .shelf-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .shelf-scroll::-webkit-scrollbar-thumb {
+            background: #FFC837;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased p-2 sm:p-4 md:p-6 flex items-center justify-center min-h-screen">
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="w-full max-w-4xl bg-white rounded-3xl shadow-2xl border-4 border-yellow-300 overflow-hidden relative my-auto">
+
+        <!-- 1. WELCOME / START SCREEN -->
+        <div id="welcome-screen" class="p-6 sm:p-10 bg-gradient-to-b from-amber-100 via-orange-50 to-yellow-100 min-h-[620px] flex flex-col justify-between relative overflow-hidden">
+            
+            <!-- Decorative Supermarket Awnings & Roof -->
+            <div class="absolute top-0 left-0 right-0 h-8 flex z-10">
+                <div class="flex-1 bg-red-500"></div><div class="flex-1 bg-white"></div>
+                <div class="flex-1 bg-red-500"></div><div class="flex-1 bg-white"></div>
+                <div class="flex-1 bg-red-500"></div><div class="flex-1 bg-white"></div>
+                <div class="flex-1 bg-red-500"></div><div class="flex-1 bg-white"></div>
+                <div class="flex-1 bg-red-500"></div><div class="flex-1 bg-white"></div>
+            </div>
+
+            <!-- Header Title -->
+            <div class="mt-8 text-center z-10">
+                <div class="flex justify-center items-center gap-2 mb-2">
+                    <span class="bg-brandYellow text-amber-900 font-extrabold px-4 py-1.5 rounded-full text-xs sm:text-sm tracking-wider uppercase shadow-sm inline-block">
+                        🛒 MATEMATIKA KELAS 2 SD
+                    </span>
+                    <!-- Button Akses Guru -->
+                    <button onclick="openGuruPinModal()" class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 shadow-md transition-all border-2 border-purple-300 transform active:scale-95">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span>🔑 Akses Guru</span>
+                    </button>
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-extrabold text-brandBlue drop-shadow-md tracking-wide">
+                    Petualangan <span class="text-brandPink">PEMDAS</span>
+                </h1>
+                <p class="text-lg sm:text-xl font-bold text-amber-800 mt-1">
+                    (Pembeli Cerdas & Mahir Penjumlahan Bersusun)
+                </p>
+            </div>
+
+            <!-- Avatars & Supermarket Illustration Section -->
+            <div class="my-4 flex flex-col sm:flex-row items-center justify-center gap-6 z-10">
+                <!-- Kasir Bu Ifa Avatar Card -->
+                <div class="bg-white/90 backdrop-blur border-4 border-pink-300 rounded-3xl p-4 text-center shadow-lg w-full sm:w-64 animate-float">
+                    <div class="w-24 h-24 mx-auto rounded-full bg-pink-100 border-4 border-pink-400 flex items-center justify-center text-5xl shadow-inner relative">
+                        👩‍🏫
+                        <span class="absolute -bottom-1 -right-1 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">Kasir</span>
+                    </div>
+                    <h2 class="font-heading text-xl font-bold text-pink-600 mt-2">Bu Ifa</h2>
+                    <p class="text-xs text-gray-600 font-semibold">"Selamat datang di Toko Serba Jajanan & Alat Tulis!"</p>
+                </div>
+
+                <!-- Center Supermarket Bag Visual -->
+                <div class="hidden md:flex flex-col items-center justify-center text-amber-600 font-extrabold text-sm">
+                    <div class="text-6xl my-1 transform hover:scale-110 transition-transform">🏪🛍️</div>
+                    <span class="bg-amber-200 text-amber-900 px-3 py-1 rounded-xl text-xs">Toko Serba Jajanan</span>
+                </div>
+
+                <!-- Pembeli Cilik Avatar Card -->
+                <div class="bg-white/90 backdrop-blur border-4 border-blue-300 rounded-3xl p-4 text-center shadow-lg w-full sm:w-64 animate-float" style="animation-delay: 1.5s;">
+                    <div class="w-24 h-24 mx-auto rounded-full bg-blue-100 border-4 border-blue-400 flex items-center justify-center text-5xl shadow-inner relative">
+                        🎒👧👦
+                        <span class="absolute -bottom-1 -right-1 bg-yellow-400 text-amber-900 text-xs px-2 py-0.5 rounded-full font-bold">Pembeli</span>
+                    </div>
+                    <h2 class="font-heading text-xl font-bold text-brandBlue mt-2">Pembeli Cilik</h2>
+                    <p class="text-xs text-gray-600 font-semibold">"Siap borong snack & alat tulis sambil berhitung!"</p>
+                </div>
+            </div>
+
+            <!-- Form Start & Player Name Input -->
+            <div class="bg-white p-5 sm:p-6 rounded-3xl border-4 border-amber-300 shadow-xl max-w-md mx-auto w-full z-10">
+                <form onsubmit="startGame(event)" class="space-y-4">
+                    <div>
+                        <label for="player-name-input" class="block text-sm font-bold text-gray-700 mb-1 text-center">
+                            Masukkan Nama Pembeli Cilik:
+                        </label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user text-amber-400 absolute left-4 top-3.5 text-lg"></i>
+                            <input type="text" id="player-name-input" required placeholder="Contoh: Budi / Ani" 
+                                class="w-full pl-11 pr-4 py-3 bg-amber-50 border-2 border-amber-300 rounded-2xl focus:outline-none focus:border-brandBlue font-bold text-gray-800 text-center text-lg shadow-inner"
+                                maxlength="15" />
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-100/70 p-3 rounded-2xl border border-amber-200 text-xs text-amber-900 space-y-1">
+                        <p class="font-bold text-center text-sm">🎯 Misi Kamu:</p>
+                        <p>1. Selesaikan <b>10 Soal Belanja</b> di 3 Level Tantangan.</p>
+                        <p>2. Pilih barang dengan <b>Drag & Drop</b> ke keranjang.</p>
+                        <p>3. Hitung total harganya dengan <b>Penjumlahan Bersusun</b>!</p>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-500 hover:to-green-600 text-white font-extrabold text-lg py-3.5 rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 transition-all flex items-center justify-center gap-2 border-b-4 border-green-700">
+                        <span>Mulai Belanja Sekarang!</span>
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Footer Badge -->
+            <div class="text-center text-xs text-amber-800 font-bold z-10 mt-3">
+                <span>Dibuat Khusus untuk Pembelajaran Matematika SD Kelas 2</span>
+            </div>
+        </div>
+
+        <!-- 2. GAMEPLAY SCREEN -->
+        <div id="game-screen" class="hidden min-h-[620px] bg-storeBg p-3 sm:p-6 flex flex-col justify-between">
+            
+            <!-- Top Navbar Status Bar -->
+            <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-md border-2 border-amber-200 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-pink-100 border-2 border-pink-400 flex items-center justify-center text-2xl shadow-sm">
+                        👩‍🏫
+                    </div>
+                    <div>
+                        <span id="level-badge" class="bg-brandBlue text-white text-xs font-bold px-2.5 py-0.5 rounded-lg">
+                            LEVEL 1
+                        </span>
+                        <h3 id="level-title" class="font-bold text-xs sm:text-sm text-gray-800">
+                            Petualang Pemula (Soal 1/10)
+                        </h3>
+                    </div>
+                </div>
+
+                <!-- Player Info & Coins -->
+                <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                    <div class="bg-amber-100 border border-amber-300 rounded-xl px-2.5 py-1 flex items-center gap-1.5">
+                        <span class="text-base sm:text-lg">🪙</span>
+                        <span id="coins-display" class="font-extrabold text-amber-900 text-xs sm:text-sm">0 Koin</span>
+                    </div>
+                    <div class="bg-purple-100 border border-purple-300 rounded-xl px-2.5 py-1 flex items-center gap-1.5">
+                        <span class="text-base sm:text-lg">⭐</span>
+                        <span id="stars-display" class="font-extrabold text-purple-900 text-xs sm:text-sm">0 Bintang</span>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl px-2.5 py-1 font-bold text-brandBlue text-xs">
+                        <i class="fa-solid fa-user me-1"></i><span id="player-name-display">Pembeli</span>
+                    </div>
+                    <button onclick="openGuruPinModal()" title="Akses Portal Guru" class="bg-purple-100 hover:bg-purple-200 text-purple-800 border border-purple-300 p-2 rounded-xl text-xs font-bold transition-all">
+                        <i class="fa-solid fa-user-tie text-purple-700"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bu Ifa Dialogue Bubble -->
+            <div class="my-3 bg-white border-2 border-pink-300 p-3 sm:p-4 rounded-2xl shadow-sm flex items-start gap-3 relative">
+                <div id="bu-ifa-avatar" class="text-3xl sm:text-4xl shrink-0 transition-transform duration-300">👩‍🏫</div>
+                <div class="flex-1">
+                    <div class="text-xs font-bold text-pink-600 mb-0.5">Kasir Bu Ifa berkata:</div>
+                    <p id="bu-ifa-dialogue" class="text-xs sm:text-sm text-gray-700 font-semibold leading-relaxed">
+                        Halo! Yuk tarik barang dari rak ke keranjang kamu ya!
+                    </p>
+                </div>
+            </div>
+
+            <!-- MAIN PLAY AREA: Left (Shelf & Basket) | Right (Vertical Addition Board) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 my-2 items-start">
+                
+                <!-- LEFT COLUMN: Shelf Items (8 Items) & Shopping Basket -->
+                <div class="lg:col-span-7 space-y-4">
+                    
+                    <!-- Shelf Section -->
+                    <div class="bg-amber-50 p-3 sm:p-4 rounded-2xl border-4 border-shelfWood shadow-md">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-heading font-bold text-amber-900 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-store text-amber-600"></i> Rak Jajanan & Alat Tulis (8 Pilihan)
+                            </h4>
+                            <span class="text-[11px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded-md font-semibold">
+                                Sentuh / Drag ke Keranjang
+                            </span>
+                        </div>
+
+                        <!-- 8 Items Shelf Grid -->
+                        <div id="shelf-items-container" class="grid grid-cols-4 gap-2 max-h-56 overflow-y-auto shelf-scroll p-1">
+                            <!-- Injected by JavaScript dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Shopping Basket Drop Zone -->
+                    <div id="shopping-basket" class="bg-amber-100/60 p-3 rounded-2xl border-2 border-dashed border-amber-400 min-h-[120px] transition-all flex flex-col justify-between relative shadow-inner">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-heading text-xs font-bold text-amber-800 flex items-center gap-1">
+                                <i class="fa-solid fa-basket-shopping text-brandPink text-sm"></i> Keranjang Belanjaan Kamu:
+                            </span>
+                            <span id="basket-count-badge" class="text-[11px] font-bold bg-amber-300 text-amber-900 px-2 py-0.5 rounded-full">
+                                0 Barang dipilih
+                            </span>
+                        </div>
+
+                        <!-- Selected Items Display inside Basket -->
+                        <div id="basket-items-container" class="flex flex-wrap gap-2 items-center justify-center min-h-[60px] py-1">
+                            <!-- Selected items appended here -->
+                        </div>
+
+                        <p id="basket-placeholder" class="text-xs text-amber-700/70 text-center font-medium my-auto">
+                            Tarik & Lepas (Drag) barang ke sini, atau klik barang di rak!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Interactive Vertical Addition Board (Papan Penjumlahan Bersusun) -->
+                <div class="lg:col-span-5 bg-white p-4 sm:p-5 rounded-3xl border-4 border-brandBlue shadow-lg relative">
+                    
+                    <div class="bg-brandBlue text-white text-center py-1.5 rounded-xl font-heading font-bold text-sm mb-3 tracking-wide">
+                        🧮 PAPAN PENJUMLAHAN BERSUSUN
+                    </div>
+
+                    <!-- Board Table -->
+                    <div class="bg-sky-50/70 p-3 rounded-2xl border-2 border-sky-200 font-mono">
+                        
+                        <!-- Header Column Titles -->
+                        <div class="grid grid-cols-3 text-center font-bold text-xs text-sky-900 mb-2 border-b border-sky-200 pb-1">
+                            <div>Keterangan</div>
+                            <div class="text-purple-600 font-extrabold">PULUHAN</div>
+                            <div class="text-pink-600 font-extrabold">SATUAN</div>
+                        </div>
+
+                        <!-- Top Carry Over Input Box (Angka Simpanan) -->
+                        <div class="grid grid-cols-3 items-center text-center my-1.5">
+                            <span class="text-[11px] font-semibold text-gray-500 italic">Simpanan:</span>
+                            <div class="flex justify-center">
+                                <input type="number" id="carry-tens" min="0" max="9" placeholder="0" 
+                                    class="w-9 h-8 text-center font-bold text-purple-700 bg-purple-100 border-2 border-purple-300 rounded-lg text-sm focus:bg-white focus:outline-none focus:border-purple-500 shadow-inner" />
+                            </div>
+                            <div class="flex justify-center">
+                                <span class="text-xs text-gray-400">-</span>
+                            </div>
+                        </div>
+
+                        <div class="border-b border-dashed border-sky-300 my-1"></div>
+
+                        <!-- Item 1 Row -->
+                        <div id="row-item1" class="grid grid-cols-3 items-center text-center my-1 font-extrabold text-base text-gray-800">
+                            <span id="label-item1" class="text-xs font-sans text-gray-600 truncate text-left pl-1">Barang 1</span>
+                            <span id="tens-item1" class="text-purple-700">0</span>
+                            <span id="ones-item1" class="text-pink-600">0</span>
+                        </div>
+
+                        <!-- Item 2 Row -->
+                        <div id="row-item2" class="grid grid-cols-3 items-center text-center my-1 font-extrabold text-base text-gray-800">
+                            <span id="label-item2" class="text-xs font-sans text-gray-600 truncate text-left pl-1">Barang 2</span>
+                            <span id="tens-item2" class="text-purple-700">0</span>
+                            <span id="ones-item2" class="text-pink-600">0</span>
+                        </div>
+
+                        <!-- Item 3 Row (Hidden by default, shown in Level 3) -->
+                        <div id="row-item3" class="hidden grid-cols-3 items-center text-center my-1 font-extrabold text-base text-gray-800">
+                            <span id="label-item3" class="text-xs font-sans text-gray-600 truncate text-left pl-1">Barang 3</span>
+                            <span id="tens-item3" class="text-purple-700">0</span>
+                            <span id="ones-item3" class="text-pink-600">0</span>
+                        </div>
+
+                        <!-- Addition Bar Line -->
+                        <div class="flex items-center justify-between border-b-4 border-gray-800 my-2 pt-1">
+                            <span class="text-xs font-sans text-gray-500 font-bold">Total Harga</span>
+                            <span class="font-extrabold text-lg text-gray-800">+</span>
+                        </div>
+
+                        <!-- Total Answer Input Row -->
+                        <div class="grid grid-cols-3 items-center text-center my-2">
+                            <span class="text-xs font-bold font-sans text-emerald-700">Hasil =</span>
+                            
+                            <!-- Input Puluhan -->
+                            <div class="flex justify-center">
+                                <input type="number" id="ans-tens" min="0" max="9" placeholder="0" 
+                                    class="w-11 h-11 text-center font-extrabold text-xl text-purple-800 bg-white border-2 border-purple-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 shadow" />
+                            </div>
+
+                            <!-- Input Satuan -->
+                            <div class="flex justify-center">
+                                <input type="number" id="ans-ones" min="0" max="9" placeholder="0" 
+                                    class="w-11 h-11 text-center font-extrabold text-xl text-pink-800 bg-white border-2 border-pink-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 shadow" />
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Wrong Answer Red Alert Notice Container (Initially Hidden) -->
+                    <div id="wrong-feedback-container" class="hidden mt-3 p-3 bg-red-100 border-2 border-red-400 rounded-2xl animate-pop text-center">
+                        <div class="font-extrabold text-red-600 text-sm flex items-center justify-center gap-1">
+                            <span>⚠️</span> <span>Wah, hampir tepat!</span>
+                        </div>
+                        <p id="wrong-feedback-text" class="text-xs font-semibold text-red-700 mt-1">
+                            Coba cek hitungan satuan atau puluhanmu lagi yuk! Kamu pasti bisa!
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-4 space-y-2">
+                        <button onclick="checkAnswer()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-extrabold py-3 rounded-2xl shadow-md hover:shadow-lg transform active:scale-95 transition-all text-sm flex items-center justify-center gap-2 border-b-4 border-indigo-800">
+                            <i class="fa-solid fa-check-circle"></i>
+                            <span>PERIKSA JAWABAN</span>
+                        </button>
+
+                        <button onclick="giveHint()" class="w-full bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold py-2 rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 border border-amber-300">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                            <span>Minta Petunjuk Bu Ifa</span>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- 3. SUCCESS / CONGRATS MODAL -->
+        <div id="success-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white border-4 border-yellow-400 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl relative animate-pop">
+                
+                <!-- Stamp Star Effect -->
+                <div id="stamp-badge" class="stamp-animation absolute -top-8 -right-4 bg-yellow-400 text-amber-900 font-extrabold text-2xl px-4 py-2 rounded-2xl border-4 border-white shadow-xl flex items-center gap-1">
+                    <span>⭐</span> <span>BENAR!</span>
+                </div>
+
+                <div class="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center text-4xl mb-3 border-4 border-green-400">
+                    👩‍🏫
+                </div>
+
+                <h3 class="font-heading text-2xl font-extrabold text-emerald-600">
+                    Luar Biasa, Pembeli Cerdas!
+                </h3>
+
+                <p id="success-explanation" class="text-xs sm:text-sm text-gray-700 font-semibold my-3 bg-amber-50 p-3 rounded-2xl border border-amber-200 leading-relaxed text-left">
+                    <!-- Dynamic explanation here -->
+                </p>
+
+                <div class="bg-yellow-100 border border-yellow-300 rounded-2xl p-2.5 my-3 flex justify-around text-xs font-extrabold text-amber-900">
+                    <span>➕ +100 Koin</span>
+                    <span>⭐ +1 Bintang</span>
+                </div>
+
+                <button onclick="nextQuestion()" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-extrabold py-3 rounded-2xl shadow-lg transform active:scale-95 transition-all text-base border-b-4 border-green-800 flex items-center justify-center gap-2">
+                    <span>LANJUT KE SOAL BERIKUTNYA</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 4. FINAL VICTORY SCREEN MODAL -->
+        <div id="victory-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <div class="bg-gradient-to-b from-yellow-50 to-amber-100 border-4 border-yellow-400 rounded-3xl max-w-lg w-full p-6 text-center shadow-2xl animate-pop space-y-4">
+                <div class="text-6xl animate-bounce">🏆</div>
+                <h2 class="font-heading text-3xl font-extrabold text-amber-900">
+                    SELAMAT! KAMU MASTER PEMDAS!
+                </h2>
+                <p class="text-sm font-semibold text-amber-800">
+                    Hebat sekali <span id="final-player-name" class="text-brandBlue font-extrabold"></span>! Kamu telah berhasil menyelesaikan seluruh 10 Soal Belanja dengan Matematika Bersusun!
+                </p>
+
+                <div class="bg-white p-4 rounded-2xl border-2 border-amber-300 grid grid-cols-2 gap-3 text-center">
+                    <div>
+                        <div class="text-2xl">🪙</div>
+                        <div id="final-coins" class="font-extrabold text-amber-900 text-lg">1000 Koin</div>
+                        <span class="text-xs text-gray-500 font-semibold">Total Koin</span>
+                    </div>
+                    <div>
+                        <div class="text-2xl">⭐</div>
+                        <div id="final-stars" class="font-extrabold text-purple-900 text-lg">10 Bintang</div>
+                        <span class="text-xs text-gray-500 font-semibold">Total Bintang</span>
+                    </div>
+                </div>
+
+                <button onclick="resetGame()" class="w-full bg-gradient-to-r from-brandBlue to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-extrabold py-3.5 rounded-2xl shadow-lg transform active:scale-95 transition-all text-lg border-b-4 border-indigo-800">
+                    🔄 Main Lagi dari Soal 1
+                </button>
+            </div>
+        </div>
+
+        <!-- 5. GURU PIN MODAL -->
+        <div id="guru-pin-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white border-4 border-purple-400 rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl relative animate-pop space-y-4">
+                <div class="w-16 h-16 mx-auto bg-purple-100 rounded-full flex items-center justify-center text-3xl text-purple-600 border-2 border-purple-300">
+                    🔑
+                </div>
+                <div>
+                    <h3 class="font-heading text-xl font-extrabold text-purple-900">
+                        Masuk Portal Guru
+                    </h3>
+                    <p class="text-xs text-gray-600 font-semibold mt-1">
+                        Masukkan Kode PIN untuk melihat rekapan hasil & peringkat siswa.
+                    </p>
+                    <p class="text-[11px] text-purple-600 font-bold bg-purple-50 rounded-lg p-1 mt-2">
+                        💡 PIN Standar Guru: <span class="underline">1234</span>
+                    </p>
+                </div>
+
+                <form onsubmit="handlePinSubmit(event)" class="space-y-3">
+                    <input type="password" id="guru-pin-input" maxlength="6" required placeholder="Masukkan PIN Guru" 
+                        class="w-full text-center tracking-widest text-2xl font-extrabold py-2.5 bg-purple-50 border-2 border-purple-300 rounded-xl focus:outline-none focus:border-purple-600 shadow-inner" />
+                    
+                    <p id="pin-error-text" class="hidden text-xs font-bold text-red-500">
+                        ⚠️ Kode PIN salah! Silakan coba lagi.
+                    </p>
+
+                    <div class="flex gap-2">
+                        <button type="button" onclick="closeGuruPinModal()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-xl text-sm transition-all">
+                            Batal
+                        </button>
+                        <button type="submit" class="w-1/2 bg-purple-600 hover:bg-purple-700 text-white font-extrabold py-2.5 rounded-xl text-sm shadow-md transition-all">
+                            Buka Rekapan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 6. GURU REKAPAN & PERINGKAT DASHBOARD MODAL -->
+        <div id="guru-dashboard-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-6">
+            <div class="bg-white border-4 border-purple-500 rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-pop">
+                
+                <!-- Modal Header -->
+                <div class="bg-purple-700 text-white p-4 sm:p-5 flex justify-between items-center shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-xl border border-purple-300">
+                            📊
+                        </div>
+                        <div>
+                            <h2 class="font-heading text-lg sm:text-xl font-bold">
+                                Rekapan Hasil & Peringkat Siswa
+                            </h2>
+                            <p class="text-xs text-purple-200">
+                                Petualangan PEMDAS Kelas 2 SD
+                            </p>
+                        </div>
+                    </div>
+                    <button onclick="closeGuruDashboard()" class="text-white/80 hover:text-white text-2xl font-bold px-2">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Dashboard Summary Cards -->
+                <div class="p-4 bg-purple-50 border-b border-purple-100 grid grid-cols-3 gap-2 sm:gap-4 shrink-0 text-center">
+                    <div class="bg-white p-2.5 sm:p-3 rounded-2xl border border-purple-200 shadow-sm">
+                        <p class="text-[11px] font-bold text-gray-500">Total Siswa</p>
+                        <p id="dash-total-students" class="text-xl sm:text-2xl font-extrabold text-purple-700">0</p>
+                    </div>
+                    <div class="bg-white p-2.5 sm:p-3 rounded-2xl border border-purple-200 shadow-sm">
+                        <p class="text-[11px] font-bold text-gray-500">Nilai Bintang Tertinggi</p>
+                        <p id="dash-max-stars" class="text-xl sm:text-2xl font-extrabold text-amber-500">0 ⭐</p>
+                    </div>
+                    <div class="bg-white p-2.5 sm:p-3 rounded-2xl border border-purple-200 shadow-sm">
+                        <p class="text-[11px] font-bold text-gray-500">Selesai 10 Soal</p>
+                        <p id="dash-completed-count" class="text-xl sm:text-2xl font-extrabold text-emerald-600">0</p>
+                    </div>
+                </div>
+
+                <!-- Table Content Container -->
+                <div class="p-4 overflow-y-auto flex-1">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <h4 class="font-bold text-sm text-gray-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-trophy text-amber-500"></i> Papan Peringkat Pembeli Cerdas
+                        </h4>
+                        <div class="flex gap-2">
+                            <button onclick="exportTableToText()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold px-3 py-1.5 rounded-xl border border-amber-300 flex items-center gap-1">
+                                <i class="fa-solid fa-copy"></i> Salin Data
+                            </button>
+                            <button onclick="printGuruRecap()" class="bg-blue-100 hover:bg-blue-200 text-blue-900 text-xs font-bold px-3 py-1.5 rounded-xl border border-blue-300 flex items-center gap-1">
+                                <i class="fa-solid fa-print"></i> Cetak / PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard Table -->
+                    <div class="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm">
+                        <table class="w-full text-left text-xs sm:text-sm">
+                            <thead class="bg-purple-100 text-purple-900 font-extrabold uppercase text-[11px]">
+                                <tr>
+                                    <th class="p-3 text-center">Rank</th>
+                                    <th class="p-3">Nama Siswa</th>
+                                    <th class="p-3 text-center">Soal Selesai</th>
+                                    <th class="p-3 text-center">Bintang</th>
+                                    <th class="p-3 text-center">Koin</th>
+                                    <th class="p-3 text-center">Status</th>
+                                    <th class="p-3 text-center">Waktu</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="guru-table-body" class="divide-y divide-gray-100 bg-white font-medium">
+                                <!-- Dynamic rows filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Footer Action Buttons -->
+                <div class="p-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center shrink-0">
+                    <button onclick="clearAllStudentRecords()" class="text-red-600 hover:text-red-800 font-bold text-xs flex items-center gap-1 px-3 py-2 rounded-xl hover:bg-red-50">
+                        <i class="fa-solid fa-trash-can"></i> Hapus Semua Rekapan
+                    </button>
+                    <button onclick="closeGuruDashboard()" class="bg-gray-800 hover:bg-gray-900 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-md">
+                        Tutup Portal Guru
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Game State Object
+        const gameState = {
+            playerName: "Pembeli Cilik",
+            studentSessionId: null,
+            currentQuestionIndex: 1, // 1 to 10
+            level: 1,                // Level 1 (Q1-4), Level 2 (Q5-8), Level 3 (Q9-10)
+            coins: 0,
+            stars: 0,
+            requiredItemsCount: 2,
+            availableShelfItems: [],
+            basketItems: []
+        };
+
+        const GURU_PIN = "1234"; // Default Teacher PIN
+
+        // Master Item Pool (Snacks & School Stationery)
+        const masterItemPool = [
+            // Snacks & Drinks
+            { id: 1, name: "Keripik Kentang", emoji: "🍟", type: "snack" },
+            { id: 2, name: "Biskuit Cokelat", emoji: "🍪", type: "snack" },
+            { id: 3, name: "Es Krim Cone", emoji: "🍦", type: "snack" },
+            { id: 4, name: "Permen Gummy", emoji: "🍬", type: "snack" },
+            { id: 5, name: "Lollipop Manis", emoji: "🍭", type: "snack" },
+            { id: 6, name: "Cokelat Batang", emoji: "🍫", type: "snack" },
+            { id: 7, name: "Susu Kotak", emoji: "🧃", type: "snack" },
+            { id: 8, name: "Donat Mesis", emoji: "🍩", type: "snack" },
+            { id: 9, name: "Popcorn Karamel", emoji: "🍿", type: "snack" },
+            { id: 10, name: "Roti Keju", emoji: "🍞", type: "snack" },
+            { id: 11, name: "Cupcake Strawberry", emoji: "🧁", type: "snack" },
+            { id: 12, name: "Boba Milk Tea", emoji: "🧋", type: "snack" },
+            // Stationery (Alat Tulis)
+            { id: 13, name: "Pensil Warna", emoji: "✏️", type: "stationery" },
+            { id: 14, name: "Buku Gambar", emoji: "🎨", type: "stationery" },
+            { id: 15, name: "Buku Tulis Lucu", emoji: "📕", type: "stationery" },
+            { id: 16, name: "Penggaris Character", emoji: "📏", type: "stationery" },
+            { id: 17, name: "Stiker Bintang", emoji: "⭐", type: "stationery" },
+            { id: 18, name: "Rautan Pensil", emoji: "✏️", type: "stationery" },
+            { id: 19, name: "Penghapus Kartun", emoji: "🧹", type: "stationery" },
+            { id: 20, name: "Gunting Kertas", emoji: "✂️", type: "stationery" }
+        ];
+
+        // Web Audio Synthesizer (Sound Effects)
+        function playSound(type) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'pop') {
+                    osc.frequency.setValueAtTime(400, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.08);
+                } else if (type === 'correct') {
+                    const now = ctx.currentTime;
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.1);
+                    osc.frequency.setValueAtTime(783.99, now + 0.2);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                } else if (type === 'wrong') {
+                    const now = ctx.currentTime;
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.setValueAtTime(180, now + 0.15);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                }
+            } catch (e) {
+                // Audio fallback silence
+            }
+        }
+
+        // Start Game Callback
+        function startGame(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('player-name-input').value.trim();
+            if (nameInput) {
+                gameState.playerName = nameInput;
+            }
+            gameState.studentSessionId = 'student_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+            document.getElementById('player-name-display').innerText = gameState.playerName;
+            
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+
+            playSound('pop');
+            saveStudentProgress(false);
+            setupQuestion(1);
+        }
+
+        // Determine Level based on Question Number
+        // Level 1: Soal 1 - 4
+        // Level 2: Soal 5 - 8
+        // Level 3: Soal 9 - 10
+        function getLevelFromQuestion(qNum) {
+            if (qNum <= 4) return 1;
+            if (qNum <= 8) return 2;
+            return 3;
+        }
+
+        // Setup Question Environment
+        function setupQuestion(qIndex) {
+            gameState.currentQuestionIndex = qIndex;
+            gameState.level = getLevelFromQuestion(qIndex);
+            gameState.basketItems = [];
+
+            // Reset UI States
+            document.getElementById('wrong-feedback-container').classList.add('hidden');
+            document.getElementById('success-modal').classList.add('hidden');
+            resetInputs();
+
+            const levelBadge = document.getElementById('level-badge');
+            const levelTitle = document.getElementById('level-title');
+            const rowItem3 = document.getElementById('row-item3');
+
+            if (gameState.level === 1) {
+                gameState.requiredItemsCount = 2;
+                levelBadge.innerText = "LEVEL 1";
+                levelBadge.className = "bg-brandBlue text-white text-xs font-bold px-2.5 py-0.5 rounded-lg";
+                levelTitle.innerText = `Petualang Pemula (Soal ${qIndex}/10)`;
+                rowItem3.classList.add('hidden');
+                rowItem3.classList.remove('grid');
+                generateShelfItemsForLevel1();
+                updateBuIfaDialogue(`Halo <span class="text-brandPink font-bold">${gameState.playerName}</span>! Di Level 1 ini, yuk <b>pilih 2 barang</b> dari rak ke keranjang belanjaanmu! (Penjumlahan tanpa menyimpan)`);
+            } else if (gameState.level === 2) {
+                gameState.requiredItemsCount = 2;
+                levelBadge.innerText = "LEVEL 2";
+                levelBadge.className = "bg-purple-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-lg";
+                levelTitle.innerText = `Petualang Hebat (Soal ${qIndex}/10)`;
+                rowItem3.classList.add('hidden');
+                rowItem3.classList.remove('grid');
+                generateShelfItemsForLevel2();
+                updateBuIfaDialogue(`Hebat! Di Level 2 ini, <b>pilih 2 barang</b> lagi ya! Hati-hati, nanti ada angka simpanan 1 puluhan! ⭐`);
+            } else {
+                gameState.requiredItemsCount = 3;
+                levelBadge.innerText = "LEVEL 3";
+                levelBadge.className = "bg-rose-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-lg";
+                levelTitle.innerText = `Master Belanja (Soal ${qIndex}/10)`;
+                rowItem3.classList.remove('hidden');
+                rowItem3.classList.add('grid');
+                generateShelfItemsForLevel3();
+                updateBuIfaDialogue(`Luar biasa! Di Level 3, kamu memborong <b>3 barang sekaligus</b>! Pilih 3 barang ke keranjangmu ya! 🛒`);
+            }
+
+            renderShelfItems();
+            renderBasketItems();
+            updateBoardNumbers();
+        }
+
+        // Item Price Generators for 8 items on shelf
+        // Level 1: Tens & Ones that DON'T carry when paired (ones sum <= 9)
+        function generateShelfItemsForLevel1() {
+            const items = [];
+            const shuffled = [...masterItemPool].sort(() => 0.5 - Math.random());
+            for (let i = 0; i < 8; i++) {
+                const tens = Math.floor(Math.random() * 3) + 1; // 1-3
+                const ones = Math.floor(Math.random() * 4);     // 0-3 (sum of two ones will be <= 6)
+                items.push({
+                    ...shuffled[i],
+                    price: tens * 10 + ones
+                });
+            }
+            gameState.availableShelfItems = items;
+        }
+
+        // Level 2: Tens & Ones that DO carry 1 ten when paired (ones sum >= 10)
+        function generateShelfItemsForLevel2() {
+            const items = [];
+            const shuffled = [...masterItemPool].sort(() => 0.5 - Math.random());
+            for (let i = 0; i < 8; i++) {
+                const tens = Math.floor(Math.random() * 3) + 1; // 1-3
+                const ones = Math.floor(Math.random() * 4) + 5; // 5-8 (sum of two ones will be >= 10)
+                items.push({
+                    ...shuffled[i],
+                    price: tens * 10 + ones
+                });
+            }
+            gameState.availableShelfItems = items;
+        }
+
+        // Level 3: 3 Items carrying & close to 100
+        function generateShelfItemsForLevel3() {
+            const items = [];
+            const shuffled = [...masterItemPool].sort(() => 0.5 - Math.random());
+            for (let i = 0; i < 8; i++) {
+                const tens = Math.floor(Math.random() * 2) + 1; // 1-2
+                const ones = Math.floor(Math.random() * 5) + 3; // 3-7
+                items.push({
+                    ...shuffled[i],
+                    price: tens * 10 + ones
+                });
+            }
+            gameState.availableShelfItems = items;
+        }
+
+        // Render 8 Items in Shelf
+        function renderShelfItems() {
+            const container = document.getElementById('shelf-items-container');
+            container.innerHTML = '';
+
+            gameState.availableShelfItems.forEach((item) => {
+                const isSelected = gameState.basketItems.some(b => b.id === item.id);
+                const card = document.createElement('div');
+                card.className = `draggable-item bg-white p-2 rounded-2xl border-2 ${isSelected ? 'opacity-40 border-gray-300 pointer-events-none' : 'border-amber-300 shadow-sm hover:shadow-md hover:border-amber-500'} flex flex-col items-center text-center select-none`;
+                
+                card.setAttribute('draggable', 'true');
+                card.setAttribute('data-id', item.id);
+
+                card.innerHTML = `
+                    <span class="text-2xl mb-0.5">${item.emoji}</span>
+                    <p class="text-[11px] font-bold text-gray-700 truncate w-full">${item.name}</p>
+                    <p class="text-xs font-extrabold text-brandBlue">Rp ${item.price}</p>
+                `;
+
+                // Drag Events
+                card.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', item.id);
+                });
+
+                // Mobile / Click Fallback
+                card.addEventListener('click', () => {
+                    addItemToBasket(item.id);
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        // Add item to Basket Logic
+        function addItemToBasket(itemId) {
+            if (gameState.basketItems.length >= gameState.requiredItemsCount) {
+                updateBuIfaDialogue(`💡 Keranjangmu sudah berisi ${gameState.requiredItemsCount} barang. Hapus barang di keranjang dulu jika ingin mengganti!`);
+                playSound('wrong');
+                return;
+            }
+
+            const item = gameState.availableShelfItems.find(i => i.id === itemId);
+            if (item && !gameState.basketItems.some(b => b.id === itemId)) {
+                gameState.basketItems.push(item);
+                playSound('pop');
+                renderShelfItems();
+                renderBasketItems();
+                updateBoardNumbers();
+                document.getElementById('wrong-feedback-container').classList.add('hidden');
+                
+                if (gameState.basketItems.length === gameState.requiredItemsCount) {
+                    updateBuIfaDialogue(`Sip! ${gameState.requiredItemsCount} barang sudah di keranjang. Sekarang, isi **Papan Penjumlahan Bersusun** di sebelah kanan ya!`);
+                }
+            }
+        }
+
+        // Remove Item from Basket
+        function removeItemFromBasket(itemId) {
+            gameState.basketItems = gameState.basketItems.filter(b => b.id !== itemId);
+            playSound('pop');
+            renderShelfItems();
+            renderBasketItems();
+            updateBoardNumbers();
+            document.getElementById('wrong-feedback-container').classList.add('hidden');
+        }
+
+        // Render Basket Items Container
+        function renderBasketItems() {
+            const container = document.getElementById('basket-items-container');
+            const placeholder = document.getElementById('basket-placeholder');
+            const countBadge = document.getElementById('basket-count-badge');
+
+            container.innerHTML = '';
+            countBadge.innerText = `${gameState.basketItems.length}/${gameState.requiredItemsCount} Barang`;
+
+            if (gameState.basketItems.length === 0) {
+                placeholder.classList.remove('hidden');
+            } else {
+                placeholder.classList.add('hidden');
+                gameState.basketItems.forEach(item => {
+                    const tag = document.createElement('div');
+                    tag.className = "bg-white border-2 border-brandPink px-2.5 py-1 rounded-xl shadow-sm flex items-center gap-2 animate-pop text-xs font-bold text-gray-800";
+                    tag.innerHTML = `
+                        <span>${item.emoji} ${item.name} (Rp ${item.price})</span>
+                        <button onclick="removeItemFromBasket(${item.id})" class="text-red-500 hover:text-red-700 font-bold ml-1">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    `;
+                    container.appendChild(tag);
+                });
+            }
+        }
+
+        // Update Numbers inside Vertical Addition Board Table
+        function updateBoardNumbers() {
+            const row3 = document.getElementById('row-item3');
+
+            // Reset Board
+            document.getElementById('label-item1').innerText = "Barang 1";
+            document.getElementById('tens-item1').innerText = "-";
+            document.getElementById('ones-item1').innerText = "-";
+
+            document.getElementById('label-item2').innerText = "Barang 2";
+            document.getElementById('tens-item2').innerText = "-";
+            document.getElementById('ones-item2').innerText = "-";
+
+            document.getElementById('label-item3').innerText = "Barang 3";
+            document.getElementById('tens-item3').innerText = "-";
+            document.getElementById('ones-item3').innerText = "-";
+
+            gameState.basketItems.forEach((item, index) => {
+                const idx = index + 1;
+                const tens = Math.floor(item.price / 10);
+                const ones = item.price % 10;
+
+                document.getElementById(`label-item${idx}`).innerText = item.name;
+                document.getElementById(`tens-item${idx}`).innerText = tens;
+                document.getElementById(`ones-item${idx}`).innerText = ones;
+            });
+        }
+
+        // Reset User Input Boxes
+        function resetInputs() {
+            document.getElementById('carry-tens').value = '';
+            document.getElementById('ans-tens').value = '';
+            document.getElementById('ans-ones').value = '';
+        }
+
+        // Bu Ifa Dialogue Setter
+        function updateBuIfaDialogue(text) {
+            document.getElementById('bu-ifa-dialogue').innerHTML = text;
+        }
+
+        // Give Step-by-Step Hint
+        function giveHint() {
+            playSound('pop');
+            if (gameState.basketItems.length < gameState.requiredItemsCount) {
+                updateBuIfaDialogue(`💡 <b>Petunjuk:</b> Masukkan dulu ${gameState.requiredItemsCount} barang dari rak ke keranjang kamu ya!`);
+                return;
+            }
+
+            const onesSum = gameState.basketItems.reduce((sum, item) => sum + (item.price % 10), 0);
+            const carry = Math.floor(onesSum / 10);
+
+            if (gameState.level === 1) {
+                updateBuIfaDialogue(`💡 <b>Petunjuk:</b> Hitung dulu kolom SATUAN di sebelah kanan (${gameState.basketItems.map(i => i.price % 10).join(' + ')} = ${onesSum}), lalu hitung kolom PULUHAN!`);
+            } else {
+                updateBuIfaDialogue(`💡 <b>Petunjuk:</b> Jumlahkan kolom SATUAN (${gameState.basketItems.map(i => i.price % 10).join(' + ')} = ${onesSum}). Tulis angka <b>${onesSum % 10}</b> di Satuan, dan simpan angka <b>${carry}</b> di Kotak Simpanan atas!`);
+            }
+        }
+
+        // MAIN CHECK ANSWER LOGIC
+        function checkAnswer() {
+            if (gameState.basketItems.length < gameState.requiredItemsCount) {
+                playSound('wrong');
+                updateBuIfaDialogue(`⚠️ Pilih dulu ${gameState.requiredItemsCount} barang ke dalam keranjang sebelum memeriksa jawaban ya!`);
+                return;
+            }
+
+            const userTens = parseInt(document.getElementById('ans-tens').value);
+            const userOnes = parseInt(document.getElementById('ans-ones').value);
+
+            if (isNaN(userTens) || isNaN(userOnes)) {
+                playSound('wrong');
+                updateBuIfaDialogue(`⚠️ Isi angka pada kolom **PULUHAN** dan **SATUAN** di Papan Penjumlahan Bersusun!`);
+                return;
+            }
+
+            const userTotal = userTens * 10 + userOnes;
+            const actualTotal = gameState.basketItems.reduce((sum, item) => sum + item.price, 0);
+
+            const onesSum = gameState.basketItems.reduce((sum, item) => sum + (item.price % 10), 0);
+            const tensSum = gameState.basketItems.reduce((sum, item) => sum + Math.floor(item.price / 10), 0);
+            const carry = Math.floor(onesSum / 10);
+
+            // EVALUATION: IF CORRECT
+            if (userTotal === actualTotal) {
+                playSound('correct');
+                gameState.coins += 100;
+                gameState.stars += 1;
+
+                document.getElementById('coins-display').innerText = `${gameState.coins} Koin`;
+                document.getElementById('stars-display').innerText = `${gameState.stars} Bintang`;
+                document.getElementById('wrong-feedback-container').classList.add('hidden');
+
+                // Save progress to storage
+                saveStudentProgress(gameState.currentQuestionIndex === 10);
+
+                // Build detailed explanation text
+                let exp = `<b>Barang yang dibeli:</b><br>`;
+                gameState.basketItems.forEach(i => {
+                    exp += `• ${i.name}: Rp ${i.price}<br>`;
+                });
+                exp += `<br><b>Langkah Penjumlahan Bersusun:</b><br>`;
+                exp += `1. Kolom Satuan: ${gameState.basketItems.map(i => i.price % 10).join(' + ')} = <b>${onesSum}</b> (Tulis ${onesSum % 10}${carry > 0 ? `, simpan ${carry} ke Puluhan` : ''})<br>`;
+                if (carry > 0) {
+                    exp += `2. Kolom Puluhan: ${carry} (Simpanan) + ${gameState.basketItems.map(i => Math.floor(i.price / 10)).join(' + ')} = <b>${userTens}</b><br>`;
+                } else {
+                    exp += `2. Kolom Puluhan: ${gameState.basketItems.map(i => Math.floor(i.price / 10)).join(' + ')} = <b>${userTens}</b><br>`;
+                }
+                exp += `<br><b>Total Harga = Rp ${actualTotal}</b>. Hebat sekali! 🎉`;
+
+                document.getElementById('success-explanation').innerHTML = exp;
+                document.getElementById('success-modal').classList.remove('hidden');
+
+            } else {
+                // EVALUATION: IF WRONG (Wah, hampir tepat!)
+                playSound('wrong');
+                const wrongNotice = document.getElementById('wrong-feedback-container');
+                const wrongText = document.getElementById('wrong-feedback-text');
+
+                wrongNotice.classList.remove('hidden');
+
+                let hintMsg = "";
+                const userOnesCorrect = (userOnes === (onesSum % 10));
+                
+                if (!userOnesCorrect) {
+                    hintMsg = `Coba hitung lagi kolom SATUAN (${gameState.basketItems.map(i => i.price % 10).join(' + ')}). Hasilnya bukan ${userOnes}, yuk perbaiki!`;
+                } else {
+                    hintMsg = `Angka Satuanmu (${userOnes}) sudah benar! Tapi hitungan PULUHAN ${carry > 0 ? '(jangan lupa tambahkan 1 simpanan di atas)' : ''} masih kurang pas. Coba hitung lagi!`;
+                }
+
+                wrongText.innerText = hintMsg;
+                updateBuIfaDialogue(`<span class="text-red-600 font-bold">Wah, hampir tepat!</span> Cek petunjuk merah di bawah Papan Penjumlahan dan hitung kembali ya!`);
+            }
+        }
+
+        // Proceed to Next Question or Final Victory
+        function nextQuestion() {
+            if (gameState.currentQuestionIndex < 10) {
+                setupQuestion(gameState.currentQuestionIndex + 1);
+            } else {
+                // Show Victory Modal after Question 10
+                playSound('correct');
+                saveStudentProgress(true);
+                document.getElementById('success-modal').classList.add('hidden');
+                document.getElementById('final-player-name').innerText = gameState.playerName;
+                document.getElementById('final-coins').innerText = `${gameState.coins} Koin`;
+                document.getElementById('final-stars').innerText = `${gameState.stars} Bintang`;
+                document.getElementById('victory-modal').classList.remove('hidden');
+            }
+        }
+
+        // Save Student Record locally & in state
+        function saveStudentProgress(isCompleted = false) {
+            if (!gameState.studentSessionId) return;
+
+            const record = {
+                id: gameState.studentSessionId,
+                playerName: gameState.playerName,
+                coins: gameState.coins,
+                stars: gameState.stars,
+                questionProgress: gameState.currentQuestionIndex,
+                completed: isCompleted,
+                lastUpdated: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
+            };
+
+            let records = JSON.parse(localStorage.getItem('pemdas_student_records') || '[]');
+            const existingIdx = records.findIndex(r => r.id === record.id);
+            if (existingIdx >= 0) {
+                records[existingIdx] = record;
+            } else {
+                records.push(record);
+            }
+            localStorage.setItem('pemdas_student_records', JSON.stringify(records));
+        }
+
+        // Fetch All Student Records
+        function getAllStudentRecords() {
+            let records = JSON.parse(localStorage.getItem('pemdas_student_records') || '[]');
+            // Sort by Stars desc, then Coins desc
+            records.sort((a, b) => (b.stars - a.stars) || (b.coins - a.coins));
+            return records;
+        }
+
+        // Teacher PIN Modal Actions
+        function openGuruPinModal() {
+            playSound('pop');
+            document.getElementById('guru-pin-input').value = '';
+            document.getElementById('pin-error-text').classList.add('hidden');
+            document.getElementById('guru-pin-modal').classList.remove('hidden');
+        }
+
+        function closeGuruPinModal() {
+            document.getElementById('guru-pin-modal').classList.add('hidden');
+        }
+
+        function handlePinSubmit(e) {
+            e.preventDefault();
+            const inputPin = document.getElementById('guru-pin-input').value.trim();
+            if (inputPin === GURU_PIN) {
+                closeGuruPinModal();
+                openGuruDashboard();
+            } else {
+                playSound('wrong');
+                document.getElementById('pin-error-text').classList.remove('hidden');
+            }
+        }
+
+        // Open Teacher Dashboard & Render Table
+        function openGuruDashboard() {
+            playSound('pop');
+            renderGuruDashboard();
+            document.getElementById('guru-dashboard-modal').classList.remove('hidden');
+        }
+
+        function closeGuruDashboard() {
+            document.getElementById('guru-dashboard-modal').classList.add('hidden');
+        }
+
+        function renderGuruDashboard() {
+            const records = getAllStudentRecords();
+            const tbody = document.getElementById('guru-table-body');
+            tbody.innerHTML = '';
+
+            // Stats
+            document.getElementById('dash-total-students').innerText = records.length;
+            const maxStars = records.length > 0 ? Math.max(...records.map(r => r.stars)) : 0;
+            document.getElementById('dash-max-stars').innerText = `${maxStars} ⭐`;
+            const completedCount = records.filter(r => r.completed || r.questionProgress >= 10).length;
+            document.getElementById('dash-completed-count').innerText = completedCount;
+
+            if (records.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="p-6 text-center text-gray-400 italic font-semibold">
+                            Belum ada siswa yang mengerjakan. Minta siswa mulai belanja terlebih dahulu!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            records.forEach((student, index) => {
+                const rank = index + 1;
+                let rankBadge = `<span class="font-extrabold text-gray-600">#${rank}</span>`;
+                if (rank === 1) rankBadge = `<span class="bg-amber-400 text-amber-950 font-extrabold px-2 py-0.5 rounded-md text-xs shadow-sm">🥇 #1</span>`;
+                else if (rank === 2) rankBadge = `<span class="bg-gray-300 text-gray-800 font-extrabold px-2 py-0.5 rounded-md text-xs shadow-sm">🥈 #2</span>`;
+                else if (rank === 3) rankBadge = `<span class="bg-amber-600 text-white font-extrabold px-2 py-0.5 rounded-md text-xs shadow-sm">🥉 #3</span>`;
+
+                const isDone = student.completed || student.questionProgress >= 10;
+                const statusBadge = isDone 
+                    ? `<span class="bg-green-100 text-green-800 font-extrabold px-2 py-0.5 rounded-full text-[11px]">Selesai (10/10)</span>`
+                    : `<span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full text-[11px]">Soal ${student.questionProgress}/10</span>`;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-purple-50/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3 text-center">${rankBadge}</td>
+                    <td class="p-3 font-bold text-gray-800">${student.playerName}</td>
+                    <td class="p-3 text-center font-extrabold text-brandBlue">${student.questionProgress}/10</td>
+                    <td class="p-3 text-center font-extrabold text-purple-700">${student.stars} ⭐</td>
+                    <td class="p-3 text-center font-extrabold text-amber-600">${student.coins} 🪙</td>
+                    <td class="p-3 text-center">${statusBadge}</td>
+                    <td class="p-3 text-center text-xs text-gray-500 font-medium">${student.date} ${student.lastUpdated}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="deleteStudentRecord('${student.id}')" class="text-red-400 hover:text-red-600 font-bold p-1">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Delete Single Record
+        function deleteStudentRecord(id) {
+            let records = getAllStudentRecords();
+            records = records.filter(r => r.id !== id);
+            localStorage.setItem('pemdas_student_records', JSON.stringify(records));
+            renderGuruDashboard();
+        }
+
+        // Clear All Records
+        function clearAllStudentRecords() {
+            if (confirm("Apakah Bapak/Ibu Yakin ingin menghapus seluruh rekapan hasil siswa? Data tidak bisa dikembalikan.")) {
+                localStorage.removeItem('pemdas_student_records');
+                renderGuruDashboard();
+            }
+        }
+
+        // Copy Table Data as Text
+        function exportTableToText() {
+            const records = getAllStudentRecords();
+            if (records.length === 0) return;
+
+            let text = "REKAPAN HASIL SISWA - PETUALANGAN PEMDAS KELAS 2 SD\n";
+            text += "===================================================\n";
+            records.forEach((r, idx) => {
+                text += `${idx + 1}. ${r.playerName} | Soal: ${r.questionProgress}/10 | Bintang: ${r.stars} | Koin: ${r.coins} | Waktu: ${r.date} ${r.lastUpdated}\n`;
+            });
+
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            alert("📋 Data rekapan berhasil disalin! Anda dapat menempelkannya (paste) di WhatsApp atau Excel.");
+        }
+
+        // Print Recap Page
+        function printGuruRecap() {
+            window.print();
+        }
+
+        // Reset Game to Question 1
+        function resetGame() {
+            gameState.coins = 0;
+            gameState.stars = 0;
+            document.getElementById('coins-display').innerText = `0 Koin`;
+            document.getElementById('stars-display').innerText = `0 Bintang`;
+            document.getElementById('victory-modal').classList.add('hidden');
+            setupQuestion(1);
+        }
+
+        // Drag & Drop Setup Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const basketZone = document.getElementById('shopping-basket');
+            if (basketZone) {
+                basketZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    basketZone.classList.add('drop-zone-active');
+                });
+
+                basketZone.addEventListener('dragleave', () => {
+                    basketZone.classList.remove('drop-zone-active');
+                });
+
+                basketZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    basketZone.classList.remove('drop-zone-active');
+                    const itemId = parseInt(e.dataTransfer.getData('text/plain'));
+                    if (itemId) {
+                        addItemToBasket(itemId);
+                    }
+                });
+            }
+
+            // Input auto-focus flow (Ones -> Tens)
+            const ansOnes = document.getElementById('ans-ones');
+            const ansTens = document.getElementById('ans-tens');
+
+            if (ansOnes && ansTens) {
+                ansOnes.addEventListener('input', (e) => {
+                    if (e.target.value.length === 1) {
+                        ansTens.focus();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
